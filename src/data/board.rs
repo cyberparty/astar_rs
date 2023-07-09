@@ -10,6 +10,8 @@ use std::fmt;
 pub struct Board {
     pub width: usize,
     pub height: usize,
+    pub start: Option<(usize, usize)>,
+    pub end: Option<(usize, usize)>,
     plots: Vec<Plot>,
 }
 
@@ -34,6 +36,8 @@ impl fmt::Display for Board {
             }
             writeln!(f)?;
         }
+        writeln!(f, "Width: {}", self.width)?;
+        writeln!(f, "Height: {}", self.height)?;
         Ok(())
     }
 }
@@ -43,11 +47,12 @@ impl Board {
         Board {
             width: 0,
             height: 0,
+            start: None,
+            end: None,
             plots: Vec::new(),
         }
     }
 
-    // TODO: fix loading from file multiple times
     pub fn load_from_file(&mut self, filepath: &str) {
         self.clear();
 
@@ -61,48 +66,68 @@ impl Board {
 
         let lines = BufReader::new(file).lines();
 
-        let mut height: usize = 0;
         let mut width: Option<usize> = None;
+        let mut start: Option<(usize, usize)> = None;
+        let mut end: Option<(usize, usize)> = None;
+
+        let mut y_index: usize = 0;
 
         for line_data in lines {
-            height += 1;
-
             let line: String = line_data.expect("ERROR: Invalid line data!");
             let raw_plots = line.split(',');
 
-            let mut row_width = 0;
+            let mut x_index = 0;
             for raw_plot in raw_plots {
-                row_width += 1;
-
                 self.plots.push(match raw_plot.trim().parse() {
                     Ok(num) => Plot::Movable(num),
                     Err(_) => {
                         match raw_plot.trim() {
-                            "S" => Plot::Start,
-                            "E" => Plot::End,
+                            "S" => {
+                                if start.is_some() {
+                                    panic!("ERROR: Multiple start points defined in grid!")
+                                }
+                                start = Some((x_index, y_index));
+                                Plot::Start
+                            }
+                            "E" => {
+                                if end.is_some() {
+                                    panic!("ERROR: Multiple end points defined in grid!")
+                                }
+                                end = Some((x_index, y_index));
+                                Plot::End
+                            }
                             "X" => Plot::Obstacle, //lmao
                             _ => Plot::Movable(0),
                         }
                     }
                 });
+                x_index += 1;
             }
 
             match width {
                 Some(global_width) => {
-                    if global_width != row_width {
+                    if global_width != x_index {
                         panic!("ERROR: Line width mismatch!")
                     }
                 }
-                None => width = Some(row_width),
+                None => width = Some(x_index),
             }
+
+            y_index += 1;
         }
+
         self.width = width.unwrap_or(0);
-        self.height = height;
+        self.height = y_index;
+
+        self.start = start;
+        self.end = end;
     }
 
     pub fn clear(&mut self) {
         self.width = 0;
         self.height = 0;
+        self.start = None;
+        self.end = None;
         self.plots.clear();
     }
 }

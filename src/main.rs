@@ -1,4 +1,5 @@
 mod data;
+//mod pathfind;
 
 use crate::data::board::Board;
 fn main() {

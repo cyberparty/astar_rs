@@ -1,4 +1,5 @@
 use crate::data::Plot;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{prelude::*, BufReader};
 
@@ -96,6 +97,37 @@ impl Board {
 
         self.width = width.unwrap_or(0);
         self.height = y_index;
+    }
+
+    pub fn get_neighbours(&self, plot: (usize, usize)) -> HashMap<(usize, usize), i32> {
+        let (plot_x, plot_y) = plot;
+        let plot_deltas: Vec<(isize, isize)> = vec![
+            (-1, -1),
+            (0, -1),
+            (1, -1),
+            (-1, 0),
+            (1, 0),
+            (-1, 1),
+            (0, 1),
+            (1, 1),
+        ];
+
+        let mut neighbours: HashMap<(usize, usize), i32> = HashMap::new();
+
+        for (delta_x, delta_y) in plot_deltas {
+            if let (Some(new_x), Some(new_y)) = (
+                plot_x.checked_add_signed(delta_x),
+                plot_y.checked_add_signed(delta_y),
+            ) {
+                if new_x < self.width || new_y < self.height {
+                    match self[(new_x, new_y)] {
+                        Plot::Movable(num) => neighbours.insert((new_x, new_y), num),
+                        Plot::Obstacle => continue,
+                    };
+                }
+            }
+        }
+        neighbours
     }
 
     pub fn clear(&mut self) {

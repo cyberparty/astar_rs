@@ -119,7 +119,7 @@ impl Board {
                 plot_x.checked_add_signed(delta_x),
                 plot_y.checked_add_signed(delta_y),
             ) {
-                if new_x < self.width || new_y < self.height {
+                if new_x < self.width && new_y < self.height {
                     match self[(new_x, new_y)] {
                         Plot::Movable(num) => neighbours.insert((new_x, new_y), num),
                         Plot::Obstacle => continue,

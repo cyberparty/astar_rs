@@ -2,11 +2,10 @@ use std::fmt;
 
 pub mod board;
 
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub enum Plot {
     Movable(i32),
     Obstacle,
-    Start,
-    End,
 }
 
 impl fmt::Display for Plot {
@@ -14,8 +13,6 @@ impl fmt::Display for Plot {
         match self {
             Plot::Movable(num) => write!(f, "{}", num),
             Plot::Obstacle => write!(f, "X"),
-            Plot::Start => write!(f, "S"),
-            Plot::End => write!(f, "E"),
         }
     }
 }

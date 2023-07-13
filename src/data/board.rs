@@ -10,8 +10,6 @@ use std::fmt;
 pub struct Board {
     pub width: usize,
     pub height: usize,
-    pub start: Option<(usize, usize)>,
-    pub end: Option<(usize, usize)>,
     plots: Vec<Plot>,
 }
 
@@ -47,8 +45,6 @@ impl Board {
         Board {
             width: 0,
             height: 0,
-            start: None,
-            end: None,
             plots: Vec::new(),
         }
     }
@@ -67,8 +63,6 @@ impl Board {
         let lines = BufReader::new(file).lines();
 
         let mut width: Option<usize> = None;
-        let mut start: Option<(usize, usize)> = None;
-        let mut end: Option<(usize, usize)> = None;
 
         let mut y_index: usize = 0;
 
@@ -82,20 +76,6 @@ impl Board {
                     Ok(num) => Plot::Movable(num),
                     Err(_) => {
                         match raw_plot.trim() {
-                            "S" => {
-                                if start.is_some() {
-                                    panic!("ERROR: Multiple start points defined in grid!")
-                                }
-                                start = Some((x_index, y_index));
-                                Plot::Start
-                            }
-                            "E" => {
-                                if end.is_some() {
-                                    panic!("ERROR: Multiple end points defined in grid!")
-                                }
-                                end = Some((x_index, y_index));
-                                Plot::End
-                            }
                             "X" => Plot::Obstacle, //lmao
                             _ => Plot::Movable(0),
                         }
@@ -118,16 +98,11 @@ impl Board {
 
         self.width = width.unwrap_or(0);
         self.height = y_index;
-
-        self.start = start;
-        self.end = end;
     }
 
     pub fn clear(&mut self) {
         self.width = 0;
         self.height = 0;
-        self.start = None;
-        self.end = None;
         self.plots.clear();
     }
 }

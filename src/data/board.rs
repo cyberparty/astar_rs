@@ -74,12 +74,10 @@ impl Board {
             for raw_plot in raw_plots {
                 self.plots.push(match raw_plot.trim().parse() {
                     Ok(num) => Plot::Movable(num),
-                    Err(_) => {
-                        match raw_plot.trim() {
-                            "X" => Plot::Obstacle, //lmao
-                            _ => Plot::Movable(0),
-                        }
-                    }
+                    Err(_) => match raw_plot.trim() {
+                        "X" => Plot::Obstacle,
+                        _ => Plot::Movable(0),
+                    },
                 });
                 x_index += 1;
             }

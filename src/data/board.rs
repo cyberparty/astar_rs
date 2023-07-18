@@ -99,7 +99,7 @@ impl Board {
         self.height = y_index;
     }
 
-    pub fn get_neighbours(&self, plot: (usize, usize)) -> HashMap<(usize, usize), i32> {
+    pub fn get_neighbours(&self, plot: (usize, usize)) -> HashMap<(usize, usize), u32> {
         let (plot_x, plot_y) = plot;
         let plot_deltas: Vec<(isize, isize)> = vec![
             (-1, -1),
@@ -112,7 +112,7 @@ impl Board {
             (1, 1),
         ];
 
-        let mut neighbours: HashMap<(usize, usize), i32> = HashMap::new();
+        let mut neighbours: HashMap<(usize, usize), u32> = HashMap::new();
 
         for (delta_x, delta_y) in plot_deltas {
             if let (Some(new_x), Some(new_y)) = (

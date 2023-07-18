@@ -4,7 +4,7 @@ pub mod board;
 
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub enum Plot {
-    Movable(i32),
+    Movable(u32),
     Obstacle,
 }
 
